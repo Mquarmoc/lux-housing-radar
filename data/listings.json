@@ -22,7 +22,7 @@
   {
     "id": "vivi-212887",
     "platform": "vivi.lu",
-    "url": "https://www.vivi.lu/en/rent/apartment",
+    "url": "https://www.vivi.lu/en/property/rent/apartment/belair/apartment-with-2-rooms-to-rent/212887",
     "quartier": "Belair",
     "rooms": 2,
     "surface_m2": 93,
@@ -37,7 +37,7 @@
     "score": 3,
     "status": "maybe",
     "reject_reason": "No parking mentioned \u2014 needs verification",
-    "notes": "93m\u00b2 Belair, elevator YES, \u20ac2,200+\u20ac300 charges. Missing parking info. [\u26a0\ufe0f vivi.lu has no direct listing URLs \u2014 link goes to search page]"
+    "notes": "93m\u00b2 Belair, elevator YES, \u20ac2,200+\u20ac300 charges. Missing parking info."
   },
   {
     "id": "athome-8892586",
