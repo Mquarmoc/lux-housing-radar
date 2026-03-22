@@ -295,10 +295,10 @@ function TeslaTab() {
   const activeStatuses = new Set(["new", "active", "maybe", "watching", "contacted"]);
   const active = data
     .filter((v) => activeStatuses.has(v.status))
-    .sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity));
+    .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
   const rejected = data
     .filter((v) => !activeStatuses.has(v.status))
-    .sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity));
+    .sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
 
   const priced = data.filter((v) => v.price);
   const activePriced = active.filter((v) => v.price);
