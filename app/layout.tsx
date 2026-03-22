@@ -3,8 +3,8 @@ import "./globals.css";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 
 export const metadata: Metadata = {
-  title: "Luxembourg Housing Radar",
-  description: "Real-time apartment scanner for Luxembourg relocation",
+  title: "Luxembourg Radar",
+  description: "Real-time housing & vehicle scanner for Luxembourg relocation",
 };
 
 export default function RootLayout({
