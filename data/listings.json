@@ -16,8 +16,8 @@
     "added": "2026-03-04T14:00:00Z",
     "score": 2,
     "status": "rejected",
-    "reject_reason": "RDC sur\u00e9lev\u00e9, no elevator, garage \u20ac250 extra pushes over budget",
-    "notes": "90m\u00b2 Belair, 2 bedrooms, would be nice but RDC + no elevator"
+    "reject_reason": "RDC surélevé, no elevator, garage €250 extra pushes over budget",
+    "notes": "90m² Belair, 2 bedrooms, would be nice but RDC + no elevator"
   },
   {
     "id": "vivi-212887",
@@ -36,8 +36,8 @@
     "added": "2026-03-04T15:30:00Z",
     "score": 3,
     "status": "maybe",
-    "reject_reason": "No parking mentioned \u2014 needs verification",
-    "notes": "93m\u00b2 Belair, elevator YES, \u20ac2,200+\u20ac300 charges. Missing parking info."
+    "reject_reason": "No parking mentioned — needs verification",
+    "notes": "93m² Belair, elevator YES, €2,200+€300 charges. Missing parking info."
   },
   {
     "id": "athome-8892586",
@@ -56,7 +56,7 @@
     "added": "2026-03-04T14:30:00Z",
     "score": 1,
     "status": "rejected",
-    "reject_reason": "\u20ac500 charges \u2192 CC \u20ac2,850 (now within budget at 2800 relaxation but still no parking/elevator)",
+    "reject_reason": "€500 charges → CC €2,850 (now within budget at 2800 relaxation but still no parking/elevator)",
     "notes": "Bonnevoie, high charges"
   },
   {
@@ -77,7 +77,7 @@
     "score": 2,
     "status": "maybe",
     "reject_reason": "No parking/elevator info, no surface confirmed",
-    "notes": "Hollerich 2-room \u20ac2,450. Also listed on wortimmo (id_493449)."
+    "notes": "Hollerich 2-room €2,450. Also listed on wortimmo (id_493449)."
   },
   {
     "id": "immotop-1884237",
@@ -97,7 +97,7 @@
     "score": 2,
     "status": "maybe",
     "reject_reason": "No surface/parking/elevator info visible in search results",
-    "notes": "Belair 2-room \u20ac2,200 \u2014 needs detail page check"
+    "notes": "Belair 2-room €2,200 — needs detail page check"
   },
   {
     "id": "immotop-1875939",
@@ -117,6 +117,46 @@
     "score": 2,
     "status": "maybe",
     "reject_reason": "No parking/elevator mentioned",
-    "notes": "Hollerich 2-room \u20ac2,200"
+    "notes": "Hollerich 2-room €2,200"
+  },
+  {
+    "id": "athome-9074443",
+    "platform": "athome.lu",
+    "url": "https://www.athome.lu/en/rent/apartment/luxembourg/id-9074443.html",
+    "quartier": "Neudorf",
+    "rooms": 2,
+    "surface_m2": 82,
+    "price_rent": 2300,
+    "price_cc": 2650,
+    "parking": false,
+    "elevator": true,
+    "balcony": true,
+    "floor": 1,
+    "furnished": false,
+    "added": "2026-04-15T13:19:28Z",
+    "score": 3,
+    "status": "maybe",
+    "reject_reason": "No parking mentioned — verify before visit",
+    "notes": "Neudorf, 82m², 2 bedrooms, 1st floor, lift, balcony 5m², basement and laundry room. 2300€ rent + 350€ charges = 2650€ CC. 500m from Kirchberg."
+  },
+  {
+    "id": "athome-2536229",
+    "platform": "athome.lu",
+    "url": "https://www.athome.lu/en/rent/apartment/luxembourg/id-2536229.html",
+    "quartier": "Limpertsberg",
+    "rooms": 2,
+    "surface_m2": 87,
+    "price_rent": 3050,
+    "price_cc": 3450,
+    "parking": true,
+    "elevator": true,
+    "balcony": true,
+    "floor": 1,
+    "furnished": false,
+    "added": "2026-04-15T13:19:28Z",
+    "score": 1,
+    "status": "rejected",
+    "reject_reason": "Over budget once charges are included; mandatory parking adds 180€/mo and description also shows a conflicting 3230€ rent figure",
+    "notes": "Limpertsberg, 87m², 2 bedrooms, 1st floor, lift, terrace 11m², laundry room, concierge, parking mandatory +180€/mo. Header says 3050€ rent + 400€ charges, body says 3230€ rent + 400€ charges — either way too expensive."
   }
 ]
