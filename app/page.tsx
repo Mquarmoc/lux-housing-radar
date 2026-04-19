@@ -170,6 +170,16 @@ function listingRowId(id: string) {
   return `listing-row-${id}`;
 }
 
+function compactUrlLabel(url: string, listingId: string) {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, "");
+    return `${host} • ${listingId}`;
+  } catch {
+    return listingId;
+  }
+}
+
 function isLuxembourgCityQuartier(value?: string) {
   if (!value) return false;
   return LUXEMBOURG_CITY_QUARTIERS.has(value.trim().toLowerCase());
@@ -290,47 +300,29 @@ function ListingsTable({
         <h2 className="text-xl font-bold text-cyan-300">{title}</h2>
         <p className="text-sm text-gray-400 mt-1">{subtitle}</p>
       </div>
-      <div className="px-2 py-2 md:px-3 overflow-x-auto">
-        <table className="w-full min-w-[1600px] table-fixed text-[11px] leading-tight md:text-xs">
-          <colgroup>
-            <col className="w-[10%]" />
-            <col className="w-[7%]" />
-            <col className="w-[6%]" />
-            <col className="w-[5%]" />
-            <col className="w-[6%]" />
-            <col className="w-[6%]" />
-            <col className="w-[5%]" />
-            <col className="w-[6%]" />
-            <col className="w-[5%]" />
-            <col className="w-[5%]" />
-            <col className="w-[4%]" />
-            <col className="w-[5%]" />
-            <col className="w-[6%]" />
-            <col className="w-[9%]" />
-            <col className="w-[13%]" />
-            <col className="w-[7%]" />
-          </colgroup>
+      <div className="px-1 py-1 md:px-2 overflow-hidden">
+        <table className="w-full table-fixed text-[9px] leading-tight md:text-[10px]">
           <thead className="bg-gray-950/80 text-gray-300">
             <tr className="border-b border-gray-800">
               {[
                 "Annonce",
                 "Quartier",
-                "Loyer brut",
-                "Charges",
+                "HC",
+                "Ch.",
                 "Total",
-                "Superficie (m²)",
-                "Nb de pièces",
+                "Surf.",
+                "Pièces",
                 "Meublé",
-                "Baignoire",
+                "Baign.",
                 "Parking",
                 "DPE",
                 "€/m²",
-                "Score global",
-                "Statut visite",
-                "URL complète",
-                "Actions",
+                "Score",
+                "Visite",
+                "URL",
+                "Act.",
               ].map((header) => (
-                <th key={header} className="px-2 py-2 text-left font-semibold break-words align-top">
+                <th key={header} className="px-1 py-1 text-left font-semibold break-words align-top">
                   {header}
                 </th>
               ))}
@@ -347,33 +339,33 @@ function ListingsTable({
                   id={listingRowId(row._id)}
                   className={`border-b transition-colors duration-700 ${isHighlighted ? "border-cyan-400/60 bg-cyan-400/10" : "border-gray-800/70"}`}
                 >
-                  <td className="px-2 py-2 font-medium break-words align-top">{row.label}</td>
-                  <td className="px-2 py-2 break-words align-top">{compactQuartier(row.quartier)}</td>
-                  <td className="px-2 py-2 break-words align-top">{formatEuro(row.grossRent)}</td>
-                  <td className="px-2 py-2 break-words align-top">{formatEuro(row.charges)}</td>
-                  <td className="px-2 py-2 break-words align-top">{formatEuro(row.total)}</td>
-                  <td className="px-2 py-2 break-words align-top">{formatArea(row.surface_m2)}</td>
-                  <td className="px-2 py-2 break-words align-top">{row.rooms ?? "N/C"}</td>
-                  <td className="px-2 py-2 break-words align-top">{formatFurnished(row.furnished ?? null)}</td>
-                  <td className="px-2 py-2 break-words align-top">{formatBoolLabel(row.bathtub ?? null)}</td>
-                  <td className="px-2 py-2 break-words align-top">{formatBoolLabel(row.parking ?? null, "1 int.", "Non")}</td>
-                  <td className="px-2 py-2 break-words align-top">{row.dpe ?? "N/C"}</td>
-                  <td className="px-2 py-2 break-words align-top">{formatEuroPerSqm(row.pricePerSqm)}</td>
-                  <td className="px-2 py-2 break-words align-top font-semibold text-cyan-300">{row.globalScore.toFixed(1)}</td>
-                  <td className="px-2 py-2 break-words align-top text-gray-300">{row.visitStatus}</td>
-                  <td className="px-2 py-2 break-all align-top">
-                    <a href={row.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">
-                      {row.url}
+                  <td className="px-1 py-1 font-medium break-words align-top">{row.label}</td>
+                  <td className="px-1 py-1 break-words align-top">{compactQuartier(row.quartier)}</td>
+                  <td className="px-1 py-1 break-words align-top">{formatEuro(row.grossRent)}</td>
+                  <td className="px-1 py-1 break-words align-top">{formatEuro(row.charges)}</td>
+                  <td className="px-1 py-1 break-words align-top">{formatEuro(row.total)}</td>
+                  <td className="px-1 py-1 break-words align-top">{formatArea(row.surface_m2)}</td>
+                  <td className="px-1 py-1 break-words align-top">{row.rooms ?? "N/C"}</td>
+                  <td className="px-1 py-1 break-words align-top">{formatFurnished(row.furnished ?? null)}</td>
+                  <td className="px-1 py-1 break-words align-top">{formatBoolLabel(row.bathtub ?? null)}</td>
+                  <td className="px-1 py-1 break-words align-top">{formatBoolLabel(row.parking ?? null, "1 int.", "Non")}</td>
+                  <td className="px-1 py-1 break-words align-top">{row.dpe ?? "N/C"}</td>
+                  <td className="px-1 py-1 break-words align-top">{formatEuroPerSqm(row.pricePerSqm)}</td>
+                  <td className="px-1 py-1 break-words align-top font-semibold text-cyan-300">{row.globalScore.toFixed(1)}</td>
+                  <td className="px-1 py-1 break-words align-top text-gray-300">{row.visitStatus}</td>
+                  <td className="px-1 py-1 break-all align-top">
+                    <a href={row.url} target="_blank" rel="noopener noreferrer" title={row.url} className="text-blue-400 hover:text-blue-300 underline underline-offset-2">
+                      {compactUrlLabel(row.url, row.listingId)}
                     </a>
                   </td>
-                  <td className="px-2 py-2 align-top">
+                  <td className="px-1 py-1 align-top">
                     <div className="flex flex-col gap-2">
                       {canReject && onReject && (
                         <button
                           type="button"
                           onClick={() => void onReject(row)}
                           disabled={isPending}
-                          className="rounded bg-red-600 px-2 py-1 text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="rounded bg-red-600 px-1.5 py-1 text-[9px] text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {isPending ? "Moving..." : "Reject"}
                         </button>
@@ -383,7 +375,7 @@ function ListingsTable({
                           type="button"
                           onClick={() => void onUndoReject(row)}
                           disabled={isPending}
-                          className="rounded bg-emerald-600 px-2 py-1 text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="rounded bg-emerald-600 px-1.5 py-1 text-[9px] text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {isPending ? "Rolling back..." : "Rollback"}
                         </button>
