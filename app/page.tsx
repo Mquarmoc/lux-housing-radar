@@ -301,7 +301,7 @@ function ListingsTable({
         <p className="text-sm text-gray-400 mt-1">{subtitle}</p>
       </div>
       <div className="px-1 py-1 md:px-2 overflow-hidden">
-        <table className="w-full table-fixed text-[9px] leading-tight md:text-[10px]">
+        <table className="w-full table-fixed text-[10px] leading-tight xl:text-[11px]">
           <thead className="bg-gray-950/80 text-gray-300">
             <tr className="border-b border-gray-800">
               {[
@@ -627,8 +627,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
-      <header className="border-b border-gray-800 px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <header className="border-b border-gray-800 px-4 py-4 xl:px-6">
+        <div className="mx-auto w-full max-w-[1720px] flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">🏠 Luxembourg Housing Radar</h1>
             <p className="text-gray-400 text-sm">Real-time apartment scanner • Live from Convex</p>
@@ -640,7 +640,7 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="mx-auto w-full max-w-[1720px] px-3 py-6 xl:px-4 2xl:px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-gray-900 rounded-xl p-4 border border-gray-800"><div className="text-3xl font-bold text-blue-400">{stats.total}</div><div className="text-gray-500 text-sm">Total Indexed</div></div>
           <div className="bg-gray-900 rounded-xl p-4 border border-gray-800"><div className="text-3xl font-bold text-yellow-400">{stats.active}</div><div className="text-gray-500 text-sm">Active</div></div>
