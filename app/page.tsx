@@ -145,6 +145,13 @@ function formatEuroPerSqm(value: number | null) {
   return `${Math.round(value)} €/m²`;
 }
 
+function formatShortDate(value: number) {
+  return new Date(value).toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+  });
+}
+
 function formatBoolLabel(value: boolean | null, yes = "Oui", no = "Non") {
   if (value == null) return "N/C";
   return value ? yes : no;
@@ -393,40 +400,40 @@ function BestActiveScatter({ rows }: { rows: ReturnType<typeof computeRow>[] }) 
   const padTop = 24;
   const padBottom = 46;
 
-  const grossValues = points.map((row) => row.grossRent ?? 0);
-  const surfaceValues = points.map((row) => row.surface_m2 ?? 0);
+  const addedValues = points.map((row) => row.added_at);
   const scoreValues = points.map((row) => row.globalScore);
+  const priceValues = points.map((row) => row.total ?? 0);
 
-  const minGross = Math.min(...grossValues);
-  const maxGross = Math.max(...grossValues);
-  const minSurface = Math.min(...surfaceValues);
-  const maxSurface = Math.max(...surfaceValues);
+  const minAdded = Math.min(...addedValues);
+  const maxAdded = Math.max(...addedValues);
   const minScore = Math.min(...scoreValues);
   const maxScore = Math.max(...scoreValues);
+  const minPrice = Math.min(...priceValues);
+  const maxPrice = Math.max(...priceValues);
 
   const plotWidth = width - padLeft - padRight;
   const plotHeight = height - padTop - padBottom;
 
   const xFor = (value: number) => {
-    const ratio = maxGross === minGross ? 0.5 : (value - minGross) / (maxGross - minGross);
+    const ratio = maxAdded === minAdded ? 0.5 : (value - minAdded) / (maxAdded - minAdded);
     return padLeft + ratio * plotWidth;
   };
 
   const yFor = (value: number) => {
-    const ratio = maxSurface === minSurface ? 0.5 : (value - minSurface) / (maxSurface - minSurface);
+    const ratio = maxScore === minScore ? 0.5 : (value - minScore) / (maxScore - minScore);
     return padTop + plotHeight - ratio * plotHeight;
   };
 
   const rFor = (value: number) => {
-    const ratio = maxScore === minScore ? 0.6 : (value - minScore) / (maxScore - minScore);
-    return 6 + ratio * 8;
+    const ratio = maxPrice === minPrice ? 0.6 : (value - minPrice) / (maxPrice - minPrice);
+    return 6 + ratio * 10;
   };
 
   return (
     <section className="bg-gray-900 rounded-xl border border-gray-800 mb-8 overflow-hidden">
       <div className="px-4 py-4 border-b border-gray-800">
         <h2 className="text-xl font-bold text-cyan-300">🎯 Nuage de points — meilleures annonces actives</h2>
-        <p className="text-sm text-gray-400 mt-1">X = loyer brut, Y = superficie, taille du point = score global. Top 15 annonces actives.</p>
+        <p className="text-sm text-gray-400 mt-1">X = date de sortie, Y = score global, taille du point = prix. Top 15 annonces actives.</p>
       </div>
       <div className="p-4">
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto rounded-lg bg-gray-950 border border-gray-800">
@@ -434,43 +441,43 @@ function BestActiveScatter({ rows }: { rows: ReturnType<typeof computeRow>[] }) 
           <line x1={padLeft} y1={height - padBottom} x2={width - padRight} y2={height - padBottom} stroke="#4b5563" strokeWidth="1" />
 
           {[0, 0.5, 1].map((ratio) => {
-            const xVal = Math.round(minGross + ratio * (maxGross - minGross || 1));
+            const xVal = Math.round(minAdded + ratio * (maxAdded - minAdded || 1));
             const x = padLeft + ratio * plotWidth;
             return (
               <g key={`x-${ratio}`}>
                 <line x1={x} y1={padTop} x2={x} y2={height - padBottom} stroke="#1f2937" strokeWidth="1" strokeDasharray="4 4" />
-                <text x={x} y={height - 14} textAnchor="middle" fill="#9ca3af" fontSize="12">{xVal}€</text>
+                <text x={x} y={height - 14} textAnchor="middle" fill="#9ca3af" fontSize="12">{formatShortDate(xVal)}</text>
               </g>
             );
           })}
 
           {[0, 0.5, 1].map((ratio) => {
-            const yVal = Math.round(minSurface + ratio * (maxSurface - minSurface || 1));
+            const yVal = minScore + ratio * (maxScore - minScore || 1);
             const y = padTop + plotHeight - ratio * plotHeight;
             return (
               <g key={`y-${ratio}`}>
                 <line x1={padLeft} y1={y} x2={width - padRight} y2={y} stroke="#1f2937" strokeWidth="1" strokeDasharray="4 4" />
-                <text x={padLeft - 10} y={y + 4} textAnchor="end" fill="#9ca3af" fontSize="12">{yVal} m²</text>
+                <text x={padLeft - 10} y={y + 4} textAnchor="end" fill="#9ca3af" fontSize="12">{yVal.toFixed(1)}</text>
               </g>
             );
           })}
 
           {points.map((row) => {
-            const x = xFor(row.grossRent ?? 0);
-            const y = yFor(row.surface_m2 ?? 0);
-            const r = rFor(row.globalScore);
+            const x = xFor(row.added_at);
+            const y = yFor(row.globalScore);
+            const r = rFor(row.total ?? minPrice);
             return (
               <g key={row._id}>
                 <circle cx={x} cy={y} r={r} fill="#22d3ee" fillOpacity="0.75" stroke="#67e8f9" strokeWidth="2">
-                  <title>{`${row.label} — ${row.globalScore.toFixed(1)} — ${formatEuro(row.grossRent)} — ${formatArea(row.surface_m2)}`}</title>
+                  <title>{`${row.label} — sortie ${new Date(row.added_at).toLocaleDateString("fr-FR")} — score ${row.globalScore.toFixed(1)} — prix ${formatEuro(row.total)}`}</title>
                 </circle>
                 <text x={x} y={y - r - 6} textAnchor="middle" fill="#e5e7eb" fontSize="11">{compactQuartier(row.quartier)}</text>
               </g>
             );
           })}
 
-          <text x={width / 2} y={height - 4} textAnchor="middle" fill="#cbd5e1" fontSize="13">Loyer brut (€ / mois)</text>
-          <text x={18} y={height / 2} textAnchor="middle" fill="#cbd5e1" fontSize="13" transform={`rotate(-90 18 ${height / 2})`}>Superficie (m²)</text>
+          <text x={width / 2} y={height - 4} textAnchor="middle" fill="#cbd5e1" fontSize="13">Date de sortie</text>
+          <text x={18} y={height / 2} textAnchor="middle" fill="#cbd5e1" fontSize="13" transform={`rotate(-90 18 ${height / 2})`}>Score global</text>
         </svg>
       </div>
     </section>
