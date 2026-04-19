@@ -166,6 +166,10 @@ function compactQuartier(value: string) {
   return value === "Unknown" ? "—" : value;
 }
 
+function listingRowId(id: string) {
+  return `listing-row-${id}`;
+}
+
 function isLuxembourgCityQuartier(value?: string) {
   if (!value) return false;
   return LUXEMBOURG_CITY_QUARTIERS.has(value.trim().toLowerCase());
@@ -268,6 +272,7 @@ function ListingsTable({
   pendingIds,
   canReject,
   undoableIds,
+  highlightedRowId,
 }: {
   title: string;
   subtitle: string;
@@ -277,6 +282,7 @@ function ListingsTable({
   pendingIds?: Record<string, boolean>;
   canReject?: boolean;
   undoableIds?: Set<string>;
+  highlightedRowId?: string | null;
 }) {
   return (
     <section className="bg-gray-900 rounded-xl border border-gray-800 mb-8 overflow-hidden">
@@ -334,8 +340,13 @@ function ListingsTable({
             {rows.map((row) => {
               const isUndoable = undoableIds?.has(row._id) ?? false;
               const isPending = !!pendingIds?.[row._id];
+              const isHighlighted = highlightedRowId === row._id;
               return (
-                <tr key={row._id} className="border-b border-gray-800/70">
+                <tr
+                  key={row._id}
+                  id={listingRowId(row._id)}
+                  className={`border-b transition-colors duration-700 ${isHighlighted ? "border-cyan-400/60 bg-cyan-400/10" : "border-gray-800/70"}`}
+                >
                   <td className="px-2 py-2 font-medium break-words align-top">{row.label}</td>
                   <td className="px-2 py-2 break-words align-top">{compactQuartier(row.quartier)}</td>
                   <td className="px-2 py-2 break-words align-top">{formatEuro(row.grossRent)}</td>
@@ -389,7 +400,15 @@ function ListingsTable({
   );
 }
 
-function BestActiveScatter({ rows }: { rows: ReturnType<typeof computeRow>[] }) {
+function BestActiveScatter({
+  rows,
+  onSelectRow,
+  highlightedRowId,
+}: {
+  rows: ReturnType<typeof computeRow>[];
+  onSelectRow?: (row: ReturnType<typeof computeRow>) => void;
+  highlightedRowId?: string | null;
+}) {
   if (rows.length === 0) return null;
 
   const points = rows.slice(0, 15);
@@ -433,7 +452,7 @@ function BestActiveScatter({ rows }: { rows: ReturnType<typeof computeRow>[] }) 
     <section className="bg-gray-900 rounded-xl border border-gray-800 mb-8 overflow-hidden">
       <div className="px-4 py-4 border-b border-gray-800">
         <h2 className="text-xl font-bold text-cyan-300">🎯 Nuage de points — meilleures annonces actives</h2>
-        <p className="text-sm text-gray-400 mt-1">X = date de sortie, Y = score global, taille du point = prix. Top 15 annonces actives.</p>
+        <p className="text-sm text-gray-400 mt-1">X = date de sortie, Y = score global, taille du point = prix. Top 15 annonces actives. Clique une bulle pour aller à la ligne correspondante.</p>
       </div>
       <div className="p-4">
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto rounded-lg bg-gray-950 border border-gray-800">
@@ -466,10 +485,31 @@ function BestActiveScatter({ rows }: { rows: ReturnType<typeof computeRow>[] }) 
             const x = xFor(row.added_at);
             const y = yFor(row.globalScore);
             const r = rFor(row.total ?? minPrice);
+            const isHighlighted = highlightedRowId === row._id;
             return (
-              <g key={row._id}>
-                <circle cx={x} cy={y} r={r} fill="#22d3ee" fillOpacity="0.75" stroke="#67e8f9" strokeWidth="2">
-                  <title>{`${row.label} — sortie ${new Date(row.added_at).toLocaleDateString("fr-FR")} — score ${row.globalScore.toFixed(1)} — prix ${formatEuro(row.total)}`}</title>
+              <g
+                key={row._id}
+                role="button"
+                tabIndex={0}
+                className="cursor-pointer"
+                onClick={() => onSelectRow?.(row)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onSelectRow?.(row);
+                  }
+                }}
+              >
+                <circle
+                  cx={x}
+                  cy={y}
+                  r={r}
+                  fill={isHighlighted ? "#f59e0b" : "#22d3ee"}
+                  fillOpacity={isHighlighted ? "0.9" : "0.75"}
+                  stroke={isHighlighted ? "#fde68a" : "#67e8f9"}
+                  strokeWidth={isHighlighted ? "3" : "2"}
+                >
+                  <title>{`${row.label} — sortie ${new Date(row.added_at).toLocaleDateString("fr-FR")} — score ${row.globalScore.toFixed(1)} — prix ${formatEuro(row.total)} — cliquer pour aller à la ligne`}</title>
                 </circle>
                 <text x={x} y={y - r - 6} textAnchor="middle" fill="#e5e7eb" fontSize="11">{compactQuartier(row.quartier)}</text>
               </g>
@@ -489,6 +529,7 @@ export default function Home() {
   const updateStatus = useMutation(api.listings.updateStatus);
   const [pendingIds, setPendingIds] = useState<Record<string, boolean>>({});
   const [undoById, setUndoById] = useState<Record<string, UndoEntry>>({});
+  const [highlightedRowId, setHighlightedRowId] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -505,6 +546,14 @@ export default function Home() {
     if (typeof window === "undefined") return;
     window.sessionStorage.setItem("housing-dashboard-undo", JSON.stringify(undoById));
   }, [undoById]);
+
+  useEffect(() => {
+    if (!highlightedRowId) return;
+    const timer = window.setTimeout(() => {
+      setHighlightedRowId((current) => (current === highlightedRowId ? null : current));
+    }, 3500);
+    return () => window.clearTimeout(timer);
+  }, [highlightedRowId]);
 
   if (rawListings === undefined) {
     return <div className="min-h-screen bg-gray-950 text-gray-100 flex items-center justify-center"><div className="text-gray-400 text-lg">Loading listings...</div></div>;
@@ -574,6 +623,16 @@ export default function Home() {
     }
   }
 
+  function focusListingRow(row: ReturnType<typeof computeRow>) {
+    setHighlightedRowId(row._id);
+    if (typeof window === "undefined") return;
+    window.requestAnimationFrame(() => {
+      const element = document.getElementById(listingRowId(row._id));
+      if (!element) return;
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }
+
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
       <header className="border-b border-gray-800 px-6 py-4">
@@ -606,7 +665,7 @@ export default function Home() {
           </div>
         </div>
 
-        <BestActiveScatter rows={activeRows} />
+        <BestActiveScatter rows={activeRows} onSelectRow={focusListingRow} highlightedRowId={highlightedRowId} />
 
         <ListingsTable
           title="📊 Classement des annonces actives"
@@ -615,6 +674,7 @@ export default function Home() {
           canReject
           onReject={handleReject}
           pendingIds={pendingIds}
+          highlightedRowId={highlightedRowId}
         />
         <ListingsTable
           title="❌ Annonces rejetées"
@@ -623,6 +683,7 @@ export default function Home() {
           onUndoReject={handleUndoReject}
           pendingIds={pendingIds}
           undoableIds={undoableIds}
+          highlightedRowId={highlightedRowId}
         />
 
         <section className="bg-gray-900 rounded-xl border border-gray-800 mb-8 overflow-hidden">
